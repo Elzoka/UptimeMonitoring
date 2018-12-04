@@ -8,6 +8,7 @@
 // Dependencies
 const http = require('http');
 const url = require('url');
+const {StringDecoder} = require('string_decoder')
 
 
 // The server should respond to all requests with a string
@@ -28,13 +29,27 @@ const server = http.createServer((req, res) => {
     // Get the headers as an object
     const headers = req.headers;
 
-    // send the response
-    res.end("Hello World\n");
+    // Get the payload, if any
+    const decoder = new StringDecoder('utf-8');
+    let buffer = '';
 
-    // log the path
-    console.log(
-        "Request recieved with these headers", headers
-    );
+    req.on('data', (data) => {
+        buffer += (decoder.write(data));
+        // buffer = data.toString('utf-8');
+    });
+
+    req.on('end', () => {
+        buffer += decoder.end();
+
+        // send the response
+        res.end("Hello World\n");
+
+        // log the path
+        console.log(
+            "Request recieved with this payload", buffer
+        );
+    });
+
 });
 
 
