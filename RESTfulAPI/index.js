@@ -11,9 +11,17 @@ const https = require('https');
 const url = require('url');
 const {StringDecoder} = require('string_decoder');
 const fs = require('fs');
-const config = require('./config');
 
-// Instantiating the HTTP server
+const config = require('./config');
+const _data = require('./lib/data');
+
+// TESTING
+// @TODO delete this
+_data.delete('test', "newFile",(err) => {
+    console.log("This was the error", err);
+});
+
+// Instantiating the HTTP server        
 const httpServer = http.createServer((req, res) => {
     unifiedServer(req, res);
 });
@@ -104,18 +112,17 @@ const unifiedServer = function(req, res) {
 // Define the handlers
 const handlers = {};
 
-// Sample handler
-handlers.sample = function(data, callback){
-    //Callback a http status code, and a payload object
-    callback(406, {'name': 'sample handler'});
-};
+handlers.ping = function(data, callback){
+    callback(200);
+}
 
 // Not found handler
 handlers.notFound = function(data, callback){
     callback(404);
 };
 
+
 // Define a request router
 const router = {
-    'sample': handlers.sample
+    'ping': handlers.ping
 };
