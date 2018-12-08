@@ -4,8 +4,7 @@
 *
 */
 
-const path = require('path');
-const fs = require('fs');
+const util = require('util');
 const https = require('https');
 const http = require('http');
 const url = require('url');
@@ -13,6 +12,8 @@ const url = require('url');
 const _data = require('./data');
 const helpers = require('./helpers');
 const _logs = require('./logs');
+
+const debug = util.debuglog('workers');
 
 // Instantiate the worker object
 const workers = {};
@@ -28,12 +29,12 @@ workers.gatherAllChecks = () => {
                         // pass it to the check validator, and let that function continue or log error
                         workers.validateCheckData(originalCheckData);
                     }else {
-                        console.log('Error reading one of the check data');
+                        debug('Error reading one of the check data');
                     }
                 });
             });
         }else{
-            console.log("Error: Could not find any checks to process");
+            debug("Error: Could not find any checks to process");
         }
     });
 };
@@ -68,7 +69,7 @@ workers.validateCheckData = (originalCheckData) => {
     ){
         workers.perfomCheck(originalCheckData);
     }else{
-        console.log('Error: one of the checks is not properly formatted. Skipping it');
+        debug('Error: one of the checks is not properly formatted. Skipping it');
     }
 }
 
@@ -169,10 +170,10 @@ workers.processCheckOutcome = (originalCheckData, checkOutcome) => {
             if(alertWarranted){
                 workers.alertUsertoStatusChange(newCheckData);
             }else{
-                console.log('Check outcome has not changed, no alert needed')
+                debug('Check outcome has not changed, no alert needed')
             }
         }else{
-            console.log('Error trying to save updates to one of the checks')
+            debug('Error trying to save updates to one of the checks')
         }
     });
 }
@@ -182,9 +183,9 @@ workers.alertUsertoStatusChange = ({method, protocol, url, state, userPhone}) =>
     const msg = `Alert: Your check for ${method.toUpperCase()} ${protocol}://${url} is currently ${state}`;
     helpers.sendTwilioSms(userPhone, msg, err => {
         if(!err){
-            console.log('Success: User was alerted to a status change in their check, via sms', msg);
+            debug('Success: User was alerted to a status change in their check, via sms', msg);
         }else{
-            console.log('Error: Couldnot send sms alert to user who had a state change in their check');
+            debug('Error: Couldnot send sms alert to user who had a state change in their check');
         }
     });
 };
@@ -208,9 +209,9 @@ workers.log = (originalCheckData, checkOutcome, state, alertWarranted, timeOfChe
     // Append the log string to the file
     _logs.append(logFileName, logString, (err) => {
         if(!err){
-            console.log('Logging to file succeeded');
+            debug('Logging to file succeeded');
         }else{
-            console.log('Logging to file failed');
+            debug('Logging to file failed');
         }
     });
 }
@@ -237,18 +238,18 @@ workers.rotateLogs = () => {
                         // Truncate the log
                         _logs.truncate(logId, (err) => {
                             if(!err){
-                                console.log('Success Truncating the logFile');
+                                debug('Success Truncating the logFile');
                             }else{
-                                console.log('Error Truncating the logFile');
+                                debug('Error Truncating the logFile');
                             }
                         });
                     }else{
-                        console.log('Error compressing one of the file', err);
+                        debug('Error compressing one of the file', err);
                     }
                 });
             });
         }else {
-            console.log('Error: Could not find any logs to rotate');
+            debug('Error: Could not find any logs to rotate');
         }
     });
 };
@@ -262,6 +263,9 @@ workers.logRotaionLoop = () => {
 
 // Init script
 workers.init = () => {
+    // Send to console, in yellow
+    console.log('\x1b[33m%s\x1b[0m', 'Background workers are running');
+
     // Execute all the checks immediatly
     workers.gatherAllChecks();
     // Call the loop so the checks will execute later on
