@@ -12,6 +12,7 @@ const url = require('url');
 
 const _data = require('./data');
 const helpers = require('./helpers');
+const _logs = require('./logs');
 
 // Instantiate the worker object
 const workers = {};
@@ -74,7 +75,7 @@ workers.validateCheckData = (originalCheckData) => {
 // Perform the check, send the originalCheckData and the outcome of the check process to the next step in the process
 workers.perfomCheck = (originalCheckData) => {
     // Prepare the initial check outcome
-    const checkOutcome = {
+    let checkOutcome = {
         error: null,
         responseCode : null
     }
@@ -113,7 +114,7 @@ workers.perfomCheck = (originalCheckData) => {
     // Bind to the error event so it doesn't get thrown
     request.on('error', (e) => {
         // Update the checkOutcome and pass the data along
-        checkOutcome.error = {
+        checkOutcome = {
             error: true,
             value: e
         }
@@ -150,11 +151,15 @@ workers.processCheckOutcome = (originalCheckData, checkOutcome) => {
     // Deccide if an alert is warranted
     const alertWarranted = originalCheckData.lastChecked && originalCheckData.state != state;
 
+    // Log the outcome
+    const timeOfCheck = Date.now();
+    workers.log(originalCheckData, checkOutcome, state, alertWarranted, timeOfCheck);
+
     // update the check data
     const newCheckData = {
         ...originalCheckData,
         state,
-        lastChecked: Date.now()
+        lastChecked: timeOfCheck
     };
 
     // Save the updates
@@ -184,6 +189,33 @@ workers.alertUsertoStatusChange = ({method, protocol, url, state, userPhone}) =>
     });
 };
 
+//
+workers.log = (originalCheckData, checkOutcome, state, alertWarranted, timeOfCheck) => {
+    // Form the log data
+    const logData = {
+        check: originalCheckData,
+        outcome:checkOutcome,
+        state,
+        alert: alertWarranted,
+        time: timeOfCheck
+    }
+
+    const logString = JSON.stringify(logData);
+
+    // Determine the name of the log file
+    const logFileName = originalCheckData.id;
+
+    // Append the log string to the file
+    _logs.append(logFileName, logString, (err) => {
+        if(!err){
+            console.log('Logging to file succeeded');
+        }else{
+            console.log('Logging to file failed');
+        }
+    });
+}
+
+
 // Timer to execute the worker-process once per Minute
 workers.loop = () => {
     setInterval(() => {
@@ -191,12 +223,55 @@ workers.loop = () => {
     }, 1000 * 60);
 };
 
+// Rotate (Compress) file log files
+workers.rotateLogs = () => {
+    // Listing all the (non compressed) log files
+    _logs.list(false, (err, logs) => {
+        if(!err && logs && logs.length > 0){
+            logs.forEach(logName => {
+                // Compress the data to different file
+                const logId = logName.replace('.log', '');
+                const newFileId = logId + '-' + Date.now();
+                _logs.compress(logId, newFileId, err => {
+                    if(!err){
+                        // Truncate the log
+                        _logs.truncate(logId, (err) => {
+                            if(!err){
+                                console.log('Success Truncating the logFile');
+                            }else{
+                                console.log('Error Truncating the logFile');
+                            }
+                        });
+                    }else{
+                        console.log('Error compressing one of the file', err);
+                    }
+                });
+            });
+        }else {
+            console.log('Error: Could not find any logs to rotate');
+        }
+    });
+};
+
+// Timer to execute the log-rotation once per day
+workers.logRotaionLoop = () => {
+    setInterval(() => {
+        workers.rotateLogs();
+    }, 1000 * 60 * 60 * 24);
+}
+
 // Init script
 workers.init = () => {
     // Execute all the checks immediatly
     workers.gatherAllChecks();
     // Call the loop so the checks will execute later on
     workers.loop();
+
+    // Compress all the logs immediatly
+    workers.rotateLogs();
+
+    // Call the compression loop so logs will be compressed later on
+    workers.logRotaionLoop();
 };
 
 // Export the module
