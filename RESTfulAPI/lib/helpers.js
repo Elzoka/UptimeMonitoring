@@ -114,24 +114,71 @@ helpers.sendTwilioSms = (phone, msg, callback) => {
 };
 
 // Get the string content of a template
-helpers.getTemplate = (templateName, callback) => {
+helpers.getTemplate = (templateName, data, callback) => {
     templateName = typeof templateName == 'string' && templateName.length > 0 ? templateName : null;
+    data = typeof data == 'object' && data !== null ? data : {};
 
     if(templateName){
         const templatesDir = path.join(__dirname, '../templates');
         fs.readFile(`${templatesDir}/${templateName}.html`, 'utf8', (err, str) => {
             if(!err && str && str.length > 0){
-                callback(null, str);
+                // Do the interpolation on the string
+                const finalString = helpers.interpolate(str, data);
+                callback(null, finalString);
             }else{
                 callback('No template could be found');
             }
         });
-
     }else{
         callback('A valid template name was not specified');
     }
 };
 
+// Add the universal header and footer to a string and pass the provided data object to the heaer and footer for interpolation
+helpers.addUniversalTemplates = (str, data, callback) => {
+    str = typeof str == 'string' && str.length > 0 ? str : '';
+    data = typeof data == 'object' && data !== null ? data : {};
+
+    // Get the header
+    helpers.getTemplate('_header', data, (err, headerString) => {
+        if(!err && headerString){
+            // Get the footer
+            helpers.getTemplate('_footer', data, (err, footerString) => {
+                if(!err && footerString){
+                    // Add them all together
+                    const fullString =  headerString + str + footerString;
+                    callback(null, fullString);
+                }else{
+                    callback('Couldn\'t find the footer template');
+                }
+            });
+        }else{
+            callback('Couldn\'t find the header template');
+        }
+    });
+}
+
+// Take a given string and a data object and find/replace all the keys within it
+helpers.interpolate = (str, data) => {
+    str = typeof str == 'string' && str.length > 0 ? str : '';
+    data = typeof data == 'object' && data !== null ? data : {};
+
+    // Add the templateGlobals to the data object, prepending their key name with "global"
+    for(let keyName in config.templateGlobals){
+        if(config.templateGlobals.hasOwnProperty(keyName)){
+            data['global.'+keyName] = config.templateGlobals[keyName];
+        }
+    }
+    // For each key in the data object, insert it's value into the string at the corresponding placeholder
+    for(let key in data){
+        if(data.hasOwnProperty(key) && typeof(data[key]) == 'string'){
+            let replace = data[key];
+            let find = `{${key}}`;
+            str = str.replace(find, replace);
+        }
+    }
+    return str;
+};
 
 // Export the module
 module.exports = helpers;
