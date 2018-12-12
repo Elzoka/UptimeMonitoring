@@ -82,12 +82,20 @@ server.unifiedServer = function(req, res) {
         }
 
         // Route the request to the handler specified in the router
-        chosenHandler(data, (statusCode = 200, payload = {}) => {
-            // Convert the payload to a string
-            const payloadString = JSON.stringify(payload);
+        chosenHandler(data, (statusCode = 200, payload = {}, contentType = 'json') => {
+            // return the response parts that are content-specific
+            let payloadString = '';
+            if(contentType == 'json'){
+                res.setHeader('Content-Type', 'application/json');
+                payloadString = JSON.stringify(payload);
 
-            // return the response
-            res.setHeader('Content-Type', 'application/json');
+            }
+            if(contentType == 'html'){
+                res.setHeader('Content-Type', 'text/html');
+                payloadString += payload;
+            }
+
+            // return the response parts that are common to all content types
             res.writeHead(statusCode);
             res.end(payloadString);
 
@@ -101,10 +109,19 @@ server.unifiedServer = function(req, res) {
 
 // Define a request router
 server.router = {
+    '': handlers.index,
+    'account/create': handlers.accountCreate,
+    'account/edit': handlers.accountEdit,
+    'account/deleted': handlers.accountDeleted,
+    'session/create': handlers.sessionCreate,
+    'session/deleted': handlers.sessionDeleted,
+    'checks/all': handlers.checksList,
+    'checks/create': handlers.checksCreate,
+    'checks/edit': handlers.checksEdit,
     'ping': handlers.ping,
-    'users': handlers.users,
-    'tokens': handlers.tokens,
-    'checks': handlers.checks
+    'api/users': handlers.users,
+    'api/tokens': handlers.tokens,
+    'api/checks': handlers.checks
 };
 
 // Init Script
