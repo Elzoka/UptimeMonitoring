@@ -64,12 +64,84 @@ cli.responders = {};
 
 // Help / Man
 cli.responders.help = () => {
-    console.log('You asked for help');
+    const commands = {
+        'exit': 'Kill the CLI (and the rest of the application)',
+        'man': 'Show this help page',
+        'help': 'Alias of the "man" command',
+        'stats': 'Get statistics on the underlying operating system and resource utilization',
+        'list users': 'Show a list of all the registered (undeleted) users in the system',
+        'more user info --(userId)': 'Show details of a specific user',
+        'more check info --up --down': 'Show a list of all the active checks in the system, including their state. The "--up" and the "--down flags are both optional"',
+        'list checks --(checkId)': 'Show details of a specified check',
+        'list logs': 'Show a list of all the log files available to be read (compressed and uncompressed)',
+        'more log info --(fileName)': 'Show details of a specified log file'
+    };
+
+    // Show a header for the help page that is as wide as the screen
+    cli.horizontalLine();
+    cli.centered('CLI MANUAL');
+    cli.horizontalLine();
+    cli.verticalSpace(2);
+
+    // Show each command, followed by it's explanation, in white and yellow respectively
+    for (let key in commands){
+        if(commands.hasOwnProperty(key)){
+            let value = commands[key];
+            let line =  '\x1b[33m' + key + '\x1b[0m';
+            let padding = 60 - line.length;
+            for(let i = 0; i< padding; i++){
+                line += ' ';
+            }
+            line += value;
+            console.log(line);
+            cli.verticalSpace();
+        }
+    }
+    cli.horizontalLine();
+};
+
+// Create the vertical space
+cli.verticalSpace = (lines = 1) => {
+    for(let i = 0; i < lines; i++){
+        console.log('');
+    }
+}
+
+// Create a horizontal line across the the screen
+cli.horizontalLine = () => {
+    // Get the avilable screen size
+    const width = process.stdout.columns;
+    let line = '';
+    for(let i = 0; i < width; i++){
+        line += '-';
+    }
+
+    console.log(line);
+};
+
+// Create centered text on the screen
+cli.centered = (str) => {
+    str = typeof str == 'string' && str.trim().length > 0 ? str.trim(): '';
+
+    // Get the available screen size
+    const width = process.stdout.columns;
+
+    // Calculate the left padding there should be
+    const leftPadding  = Math.floor((width - str.length) /2);
+
+    // Put in left padded spaces before the string itself
+    let line = '';
+
+    for(let i = 0; i < leftPadding; i++){
+        line += ' ';
+    }
+    line += str;
+    console.log(line);
 };
 
 // Exit
 cli.responders.exit = () => {
-    console.log('You asked for exit');
+    process.exit(0);
 };
 
 // Stats
