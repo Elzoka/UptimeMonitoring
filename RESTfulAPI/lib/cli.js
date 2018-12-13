@@ -16,6 +16,97 @@ const e = new _events();
 // Instantiate the CLI module object
 const cli = {};
 
+// Input handlers
+e.on('man', (str) => {
+    cli.responders.help();
+});
+
+e.on('help', (str) => {
+    cli.responders.help();
+});
+
+e.on('exit', (str) => {
+    cli.responders.exit();
+});
+
+e.on('stats', (str) => {
+    cli.responders.stats();
+});
+
+e.on('list users', (str) => {
+    cli.responders.listUsers();
+});
+
+e.on('more user info', (str) => {
+    cli.responders.moreUserInfo(str);
+});
+
+e.on('list checks', (str) => {
+    cli.responders.listChecks(str);
+});
+
+e.on('more check info', (str) => {
+    cli.responders.moreCheckInfo(str);
+});
+
+e.on('list logs', (str) => {
+    cli.responders.listLogs();
+});
+
+e.on('more log info', (str) => {
+    cli.responders.moreLogInfo(str);
+});
+
+
+// Responders
+cli.responders = {};
+
+
+// Help / Man
+cli.responders.help = () => {
+    console.log('You asked for help');
+};
+
+// Exit
+cli.responders.exit = () => {
+    console.log('You asked for exit');
+};
+
+// Stats
+cli.responders.stats = () => {
+    console.log('You asked for stats');
+}
+
+// List users
+cli.responders.listUsers = () => {
+    console.log('You asked for list users');
+};
+
+// more User info
+cli.responders.moreUserInfo = (str) => {
+    console.log('You asked for more user info', str);
+}
+
+// List checks
+cli.responders.listChecks = (str) => {
+    console.log('You asked to list checks', str);
+}
+
+// more check info
+cli.responders.moreCheckInfo = (str) => {
+    console.log('You asked for more check info', str);
+}
+
+// list logs
+cli.responders.listLogs = () => {
+    console.log('You asked to list logs', str);
+}
+
+// More logs info
+cli.responders.moreLogInfo = (str) => {
+    console.log('You asked for more log info', str);
+}
+
 // Input processor
 cli.processInput = (str) => {
     // Only process the input if the user actually wrote something, Otherwise we want to ignore it 
