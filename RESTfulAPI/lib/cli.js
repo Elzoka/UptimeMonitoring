@@ -15,6 +15,9 @@ const debug = util.debuglog('cli');
 class _events extends events{};
 const e = new _events();
 
+const _data = require('./data');
+
+
 // Instantiate the CLI module object
 const cli = {};
 
@@ -186,7 +189,23 @@ cli.responders.stats = () => {
 
 // List users
 cli.responders.listUsers = () => {
-    console.log('You asked for list users');
+    _data.list('users', (err, userIds) => {
+        if(!err && userIds && userIds.length > 0){
+            cli.verticalSpace();
+            userIds.forEach(userId => {
+                _data.read('users', userId, (err, userData) => {
+                    if(!err && userData){
+                        let line = `Name: ${userData.firstName} ${userData.lastName} Phone: ${userData.phone} Checks: `;
+                        var numberOfChecks = typeof userData.checks == 'object' && userData.checks instanceof Array && userData.checks.length > 0 ? userData.checks.length : 0;
+
+                        line += numberOfChecks;
+                        console.log(line);
+                        cli.verticalSpace();
+                    }
+                });
+            });
+        }
+    });
 };
 
 // more User info
