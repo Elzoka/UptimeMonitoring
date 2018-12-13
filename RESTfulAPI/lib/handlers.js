@@ -28,21 +28,134 @@ handlers.index = (data, callback) => {
             'body.class': 'index'
         };
 
-        // Read in a template as a string
-        helpers.getTemplate('index', templateData,(err, str) => {
-            if(!err && str){
-                // Add the universal header and footer
-                helpers.addUniversalTemplates(str, templateData, (err, str) => {
-                  if(!err && str){
-                    callback(200, str, 'html');
-                  }else{
-                    callback(500, null, 'html');
-                  }
-                });
-            }else{
-                callback(500, undefined, 'html');
-            }
-        });
+        helpers.renderPage('index', templateData, callback);
+
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Create Account
+handlers.accountCreate = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Create an Account',
+            'head.description': 'Signup is easy and only takes a few seconds.',
+            'body.class': 'accountCreate'
+        };
+
+        helpers.renderPage('accountCreate', templateData, callback);
+
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Create new Session
+handlers.sessionCreate = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Login to your account',
+            'head.description': 'Please enter you phone number and password to access your account',
+            'body.class': 'sessionCreate'
+        };
+
+        helpers.renderPage('sessionCreate', templateData, callback);
+
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Session has been deleted
+handlers.sessionDeleted = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Logged Out',
+            'head.description': 'You have been logged out of your account.',
+            'body.class': 'sessionDeleted'
+        };
+
+        helpers.renderPage('sessionDeleted', templateData, callback);
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Edit your account
+handlers.accountEdit = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Account Settings',
+            'body.class': 'accountEdit'
+        };
+
+        helpers.renderPage('accountEdit', templateData, callback);
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Account has been deleted
+handlers.accountDeleted = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Account Deleted',
+            'head.description': 'Your account has been deleted',
+            'body.class': 'accountDeleted'
+        };
+
+        helpers.renderPage('accountDeleted', templateData, callback);
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Create a new Check
+handlers.checksCreate = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Create a New Check',
+            'body.class': 'checksCreate'
+        };
+
+        helpers.renderPage('checksCreate', templateData, callback);
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Dashboard (view all checks)
+handlers.checksList = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Dashboard',
+            'body.class': 'checksList'
+        };
+
+        helpers.renderPage('checksList', templateData, callback);
+    }else{
+        callback(405, undefined, 'html');
+    }
+}
+
+// Edit a check
+handlers.checksEdit = (data, callback) => {
+    if(data.method == 'get'){
+        // Prepare data for interpolation
+        let templateData = {
+            'head.title': 'Check Details',
+            'body.class': 'checksEdit'
+        };
+
+        helpers.renderPage('checksEdit', templateData, callback);
     }else{
         callback(405, undefined, 'html');
     }

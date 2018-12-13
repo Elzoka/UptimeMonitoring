@@ -198,5 +198,23 @@ helpers.getStaticAsset = (fileName, callback) => {
     }
 };
 
+helpers.renderPage = (pageName, templateData, callback) => {
+    // Read in a template as a string
+    helpers.getTemplate(pageName, templateData,(err, str) => {
+        if(!err && str){
+            // Add the universal header and footer
+            helpers.addUniversalTemplates(str, templateData, (err, str) => {
+                if(!err && str){
+                callback(200, str, 'html');
+                }else{
+                callback(500, null, 'html');
+                }
+            });
+        }else{
+            callback(500, undefined, 'html');
+        }
+    });
+}
+
 // Export the module
 module.exports = helpers;
