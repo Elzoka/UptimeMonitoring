@@ -70,7 +70,10 @@ server.unifiedServer = function(req, res) {
         buffer += decoder.end();
 
         // Choose the handler this request should go to. If one is not found, use the not found handler
-        const chosenHandler = typeof(server.router[trimmedPath]) !== 'undefined' ? server.router[trimmedPath] : handlers.notFound;
+        let chosenHandler = typeof(server.router[trimmedPath]) !== 'undefined' ? server.router[trimmedPath] : handlers.notFound;
+
+        // if the request is within the public directory, use the public handler instead
+        chosenHandler = trimmedPath.includes('public/') ? handlers.public : chosenHandler;
 
         // Construct the data object to send to the handler
         const data = {
@@ -90,9 +93,35 @@ server.unifiedServer = function(req, res) {
                 payloadString = JSON.stringify(payload);
 
             }
+            
             if(contentType == 'html'){
                 res.setHeader('Content-Type', 'text/html');
-                payloadString += payload;
+                payloadString = typeof payload == 'string' ? payload : '';
+            }
+
+            if(contentType == 'favicon'){
+                res.setHeader('Content-Type', 'image/x-icon');
+                payloadString = typeof payload != 'undefined' ? payload : '';
+            }
+
+            if(contentType == 'css'){
+                payloadString = typeof payload != 'undefined' ? payload : '';
+                res.setHeader('Content-Type', 'text/css');
+            }
+
+            if(contentType == 'png'){
+                res.setHeader('Content-Type', 'image/png');
+                payloadString = typeof payload != 'undefined' ? payload : '';
+            }
+
+            if(contentType == 'jpg'){
+                res.setHeader('Content-Type', 'image/jpeg');
+                payloadString = typeof payload != 'undefined' ? payload : '';
+            }
+
+            if(contentType == 'plain'){
+                res.setHeader('Content-Type', 'text/plain');
+                payloadString = typeof payload != 'undefined' ? payload : '';
             }
 
             // return the response parts that are common to all content types
@@ -121,7 +150,9 @@ server.router = {
     'ping': handlers.ping,
     'api/users': handlers.users,
     'api/tokens': handlers.tokens,
-    'api/checks': handlers.checks
+    'api/checks': handlers.checks,
+    'favicon.ico': handlers.favicon,
+    'public': handlers.public
 };
 
 // Init Script
