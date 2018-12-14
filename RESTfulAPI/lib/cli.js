@@ -232,7 +232,28 @@ cli.responders.moreUserInfo = (str) => {
 
 // List checks
 cli.responders.listChecks = (str) => {
-    console.log('You asked to list checks', str);
+    _data.list('checks', (err, checkIds) => {
+        if(!err && checkIds && checkIds.length > 0){
+            cli.verticalSpace();
+            const flag = str.split('--')[1];
+            const stateToPrint = flag && typeof flag == 'string' &&['down', 'up'].includes(flag.trim().toLowerCase()) ? flag.trim().toLowerCase() : 'all';
+            checkIds.forEach(checkId => {
+                _data.read('checks', checkId, (err, {id, method, protocol, url, state}) => {
+                    let line = "";
+                    if(stateToPrint === 'all'){
+                        line = `ID: ${id} ${method.toUpperCase()} ${protocol}://${url} State: ${(state || 'Unknown')}`;
+                        console.log(line);
+                    }else{
+                        if(state === stateToPrint){
+                            line = `ID: ${id} ${method.toUpperCase()} ${protocol}://${url} State: ${(state || 'Unknown')}`;
+                            console.log(line);
+                        }
+                    }
+                    cli.verticalSpace();
+                });
+            });
+        }
+    });
 }
 
 // more check info
