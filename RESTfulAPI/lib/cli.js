@@ -258,7 +258,21 @@ cli.responders.listChecks = (str) => {
 
 // more check info
 cli.responders.moreCheckInfo = (str) => {
-    console.log('You asked for more check info', str);
+    // Get the id from the string
+    const arr = str.split('--');
+    const checkId = typeof(arr[1]) == 'string' && arr[1].trim().length > 0 ? arr[1].trim() : null;
+
+    if(checkId){
+        // Lookup the check
+        _data.read('checks', checkId, (err, checkData) => {
+            if(!err && checkData){
+                // Print the JSON with text highlighting
+                cli.verticalSpace();
+                console.dir(checkData, {'colors': true});
+                cli.verticalSpace();
+            }
+        });
+    }
 }
 
 // list logs
