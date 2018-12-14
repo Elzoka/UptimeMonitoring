@@ -210,7 +210,24 @@ cli.responders.listUsers = () => {
 
 // more User info
 cli.responders.moreUserInfo = (str) => {
-    console.log('You asked for more user info', str);
+    // Get the id from the string
+    const arr = str.split('--');
+    const userId = typeof(arr[1]) == 'string' && arr[1].trim().length > 0 ? arr[1].trim() : null;
+
+    if(userId){
+        // Lookup the user
+        _data.read('users', userId, (err, userData) => {
+            if(!err && userData){
+                // Remove the hashed password
+                delete userData.hashedPassword;
+
+                // Print the JSON with text highlighting
+                cli.verticalSpace();
+                console.dir(userData, {'colors': true});
+                cli.verticalSpace();
+            }
+        });
+    }
 }
 
 // List checks
@@ -281,7 +298,7 @@ cli.init = () => {
     const _interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        prompt: '>',
+        prompt: '',
         terminal: false
     });
 
