@@ -16,7 +16,7 @@ class _events extends events{};
 const e = new _events();
 
 const _data = require('./data');
-
+const _logs = require('./logs');
 
 // Instantiate the CLI module object
 const cli = {};
@@ -78,7 +78,7 @@ cli.responders.help = () => {
         'more user info --(userId)': 'Show details of a specific user',
         'more check info --up --down': 'Show a list of all the active checks in the system, including their state. The "--up" and the "--down flags are both optional"',
         'list checks --(checkId)': 'Show details of a specified check',
-        'list logs': 'Show a list of all the log files available to be read (compressed and uncompressed)',
+        'list logs': 'Show a list of all the log files available to be read (compressed only)',
         'more log info --(fileName)': 'Show details of a specified log file'
     };
 
@@ -277,7 +277,17 @@ cli.responders.moreCheckInfo = (str) => {
 
 // list logs
 cli.responders.listLogs = () => {
-    console.log('You asked to list logs', str);
+    _logs.list(true, (err, logFileNames) => {
+        if(!err && logFileNames && logFileNames.length > 0){
+            cli.verticalSpace();
+            logFileNames.forEach(logFileName => {
+                if(logFileName.includes('-')){
+                    console.log(logFileName);
+                    cli.verticalSpace();
+                }
+            });
+        }
+    });
 }
 
 // More logs info

@@ -52,7 +52,7 @@ lib.list = (includeCompressedLogs, callback) => {
 
                 // Add on the .gz files
                 if(fileName.includes('.gz.b64') && includeCompressedLogs){
-                    trimmedFileNames.push(fileName.push(fileName.replace('.gz.b64')));
+                    trimmedFileNames.push(fileName.replace('.gz.b64', ''));
                 }
             });
             callback(null, trimmedFileNames);
