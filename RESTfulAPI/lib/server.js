@@ -84,55 +84,65 @@ server.unifiedServer = function(req, res) {
             payload: helpers.parseJsonToObject(buffer)
         }
 
-        // Route the request to the handler specified in the router
-        chosenHandler(data, (statusCode = 200, payload = {}, contentType = 'json') => {
-            // return the response parts that are content-specific
-            let payloadString = '';
-            if(contentType == 'json'){
-                res.setHeader('Content-Type', 'application/json');
-                payloadString = JSON.stringify(payload);
-
-            }
-            
-            if(contentType == 'html'){
-                res.setHeader('Content-Type', 'text/html');
-                payloadString = typeof payload == 'string' ? payload : '';
-            }
-
-            if(contentType == 'favicon'){
-                res.setHeader('Content-Type', 'image/x-icon');
-                payloadString = typeof payload != 'undefined' ? payload : '';
-            }
-
-            if(contentType == 'css'){
-                payloadString = typeof payload != 'undefined' ? payload : '';
-                res.setHeader('Content-Type', 'text/css');
-            }
-
-            if(contentType == 'png'){
-                res.setHeader('Content-Type', 'image/png');
-                payloadString = typeof payload != 'undefined' ? payload : '';
-            }
-
-            if(contentType == 'jpg'){
-                res.setHeader('Content-Type', 'image/jpeg');
-                payloadString = typeof payload != 'undefined' ? payload : '';
-            }
-
-            if(contentType == 'plain'){
-                res.setHeader('Content-Type', 'text/plain');
-                payloadString = typeof payload != 'undefined' ? payload : '';
-            }
-
-            // return the response parts that are common to all content types
-            res.writeHead(statusCode);
-            res.end(payloadString);
-
-            // If response is 200 otherwise print red
-            const logColor = statusCode == 200 ? '\x1b[32m%s\x1b[0m' : '\x1b[31m%s\x1b[0m'
-            debug(logColor, `${method.toUpperCase()} /${trimmedPath} ${statusCode}`);            
-        });
+        try{
+            // Route the request to the handler specified in the router
+            chosenHandler(data, (statusCode = 200, payload = {}, contentType = 'json') => {
+                server.processHandlerResponse(res, method, trimmedPath, statusCode, payload, contentType);
+            });
+        }catch(e){
+            debug(e);
+            server.processHandlerResponse(res, method, trimmedPath, 500, {'Error': 'An unknown error has occured'}, 'json');
+        }
     });
+}
+
+// Process the response from the handler
+server.processHandlerResponse = (res, method, trimmedPath, statusCode, payload, contentType) => {
+    // return the response parts that are content-specific
+    let payloadString = '';
+    if(contentType == 'json'){
+        res.setHeader('Content-Type', 'application/json');
+        payloadString = JSON.stringify(payload);
+
+    }
+    
+    if(contentType == 'html'){
+        res.setHeader('Content-Type', 'text/html');
+        payloadString = typeof payload == 'string' ? payload : '';
+    }
+
+    if(contentType == 'favicon'){
+        res.setHeader('Content-Type', 'image/x-icon');
+        payloadString = typeof payload != 'undefined' ? payload : '';
+    }
+
+    if(contentType == 'css'){
+        payloadString = typeof payload != 'undefined' ? payload : '';
+        res.setHeader('Content-Type', 'text/css');
+    }
+
+    if(contentType == 'png'){
+        res.setHeader('Content-Type', 'image/png');
+        payloadString = typeof payload != 'undefined' ? payload : '';
+    }
+
+    if(contentType == 'jpg'){
+        res.setHeader('Content-Type', 'image/jpeg');
+        payloadString = typeof payload != 'undefined' ? payload : '';
+    }
+
+    if(contentType == 'plain'){
+        res.setHeader('Content-Type', 'text/plain');
+        payloadString = typeof payload != 'undefined' ? payload : '';
+    }
+
+    // return the response parts that are common to all content types
+    res.writeHead(statusCode);
+    res.end(payloadString);
+
+    // If response is 200 otherwise print red
+    const logColor = statusCode == 200 ? '\x1b[32m%s\x1b[0m' : '\x1b[31m%s\x1b[0m'
+    debug(logColor, `${method.toUpperCase()} /${trimmedPath} ${statusCode}`);            
 }
 
 
@@ -152,7 +162,8 @@ server.router = {
     'api/tokens': handlers.tokens,
     'api/checks': handlers.checks,
     'favicon.ico': handlers.favicon,
-    'public': handlers.public
+    'public': handlers.public,
+    'example/err': handlers.exampleErr
 };
 
 // Init Script

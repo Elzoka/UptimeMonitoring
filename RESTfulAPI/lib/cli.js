@@ -338,7 +338,6 @@ cli.processInput = (str) => {
 
         // Go through the possible inputs, emit an event when a match is found
         let matchFound = false;
-        let count = 0;
         uniqueInputs.some(input => {
             if(str.toLowerCase().includes(input)){
                 matchFound = true;

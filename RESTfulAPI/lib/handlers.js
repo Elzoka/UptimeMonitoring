@@ -227,6 +227,10 @@ handlers.public = (data, callback) => {
 *
 */
 
+handlers.exampleErr =(data, callback) => {
+    const e = new Error('This is an example error');
+    throw e;
+}
 
 // Users
 handlers.users = (data, callback) => {

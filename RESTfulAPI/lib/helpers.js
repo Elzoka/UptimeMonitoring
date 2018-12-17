@@ -16,6 +16,11 @@ const config = require('./config');
 // Container for all the helpers
 let helpers = {};
 
+// Sample for testing that simply returns a number
+helpers.getANumber = () => {
+    return 1;
+};
+
 // Create a SHA256 hash
 helpers.hash = (str) => {
     if(typeof(str) == 'string' && str.length > 0){
