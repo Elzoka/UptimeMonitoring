@@ -40,7 +40,7 @@ unit['logs.list should callback a false error and an array of log names'] = (don
     logs.list(true, (err, logFileNames) => {
         assert.equal(err, null);
         assert.ok(logFileNames instanceof Array);
-        assert.ok(logFileNames > 1);
+        assert.ok(logFileNames.length > 1);
         done();
     });
 };

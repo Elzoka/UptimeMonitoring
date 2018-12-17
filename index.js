@@ -14,17 +14,22 @@ const cli = require('./lib/cli');
 const app = {};
 
 // Init function
-app.init = () => {
+app.init = (callback) => {
     // Start the server
     server.init();
     // Start the workers
     workers.init();
     // Start the CLI, make sure it starts last
-    setImmediate(cli.init);
+    setImmediate(() => {
+        cli.init();
+        callback();
+    });
 };
 
-// Execute
-app.init();
+// Self invoking only if required directly
+if(require.main === module){
+    app.init(() => {});
+}
 
 // Export the app
 module.exports = app;

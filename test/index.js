@@ -4,6 +4,8 @@
 *
 */
 
+// Override the NODE_ENV variable
+process.env.NODE_ENV = 'testing';
 
 
 // Application logic for the test runner
@@ -14,6 +16,9 @@ _app.tests = {};
 
 // add on unit tests
 _app.tests.unit = require('./unit');
+
+// add on api tests
+_app.tests.api = require('./api');
 
 
 // Count all the tests
@@ -97,7 +102,7 @@ _app.produceTestReport = (limit, successes, errors) => {
     console.log("");
     errors.forEach(testError => {
         console.log('\x1b[31m%s\x1b[0m', testError.name);
-        console.log("Expected: " + testError.error.expected + " and got " + testError.error.actual);
+        console.log(testError.error);
         console.log("");
     });
     console.log('-----------------------END ERROR REPORT--------------------------');
@@ -107,7 +112,7 @@ _app.produceTestReport = (limit, successes, errors) => {
     console.log("");
     console.log('-----------------------END TEST REPORT--------------------------');
 
-
+    process.exit(0);
 }
 
 // Run the tests
