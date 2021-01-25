@@ -1,5 +1,6 @@
 module.exports = {
   plugins: ["simple-import-sort", "import"],
+  parser: "@typescript-eslint/parser",
   root: true,
   parserOptions: {
     ecmaVersion: 2020,
@@ -21,10 +22,13 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:import/errors",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended",
+    "prettier/@typescript-eslint",
     "plugin:prettier/recommended",
   ],
   rules: {
@@ -40,6 +44,14 @@ module.exports = {
       },
     ],
     "react/prop-types": "off",
+    "@typescript-eslint/explicit-function-return-type": [
+      "warn",
+      {
+        allowExpressions: true,
+        allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": ["error"],
     "react-hooks/rules-of-hooks": "error",
     "no-console": "warn",
   },
