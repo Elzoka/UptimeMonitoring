@@ -6,7 +6,10 @@
   "scripts": {
     "start:dev": "nodemon src/index.ts",
     "build": "tsc -p ./",
+    "prestart": "npm run build",
+    "start": "node build/index.js",
     "format": "prettier \"src/**/*.{ts,tsx}\" --write",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" -c .eslintrc.js --fix",
     "test": "jest"
   },
   "keywords": [],
