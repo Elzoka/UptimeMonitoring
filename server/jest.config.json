@@ -1,0 +1,5 @@
+{
+  "testEnvironment": "node",
+  "rootDir": "src",
+  "testMatch": ["**/?(*.)+(spec|test).[t|j]s?(x)"]
+}
