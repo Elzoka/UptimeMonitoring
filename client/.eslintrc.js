@@ -44,13 +44,14 @@ module.exports = {
       },
     ],
     "react/prop-types": "off",
-    "@typescript-eslint/explicit-function-return-type": [
-      "warn",
-      {
-        allowExpressions: true,
-        allowConciseArrowFunctionExpressionsStartingWithVoid: true,
-      },
-    ],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    // "@typescript-eslint/explicit-function-return-type": [
+    //   "warn",
+    //   {
+    //     allowExpressions: true,
+    //     allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+    //   },
+    // ],
     "@typescript-eslint/no-unused-vars": ["error"],
     "react-hooks/rules-of-hooks": "error",
     "no-console": "warn",
