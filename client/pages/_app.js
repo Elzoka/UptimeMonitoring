@@ -1,6 +1,11 @@
+import "../styles/app.css";
+
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Head from "next/head";
 import React from "react";
+
+import Footer from "../components/footer";
+import Header from "../components/header";
 
 export default function MyApp(props) {
   const { Component, pageProps } = props;
@@ -22,7 +27,9 @@ export default function MyApp(props) {
         />
       </Head>
       <CssBaseline />
+      <Header />
       <Component {...pageProps} />
+      <Footer />
     </React.Fragment>
   );
 }
