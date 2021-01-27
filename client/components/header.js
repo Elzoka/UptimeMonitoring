@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import Link from "next/link";
 
 export default function Header() {
@@ -10,23 +11,33 @@ export default function Header() {
       {/* Navigation */}
       <ul className="menu">
         <li>
-          <Link href="/">Home</Link>
+          <Link href="/">
+            <a>Home</a>
+          </Link>
         </li>
         <li className="loggedOut">
-          <Link href="/account/create">Signup</Link>
+          <Link href="/account/create">
+            <a>Signup</a>
+          </Link>
         </li>
         <li className="loggedOut">
-          <Link href="/session/create">Login</Link>
+          <Link href="/session/create">
+            <a>Login</a>
+          </Link>
         </li>
         <li className="loggedIn">
-          <Link href="/checks/all">Dashboard</Link>
+          <Link href="/checks">
+            <a>Dashboard</a>
+          </Link>
         </li>
         <li className="loggedIn">
-          <Link href="/account/edit">Account Settings</Link>
+          <Link href="/account/edit">
+            <a>Account Settings</a>
+          </Link>
         </li>
         <li className="loggedIn">
-          <Link href="#" id="logoutButton">
-            Logout
+          <Link href="#" id="logoutButton ">
+            <a> Logout</a>
           </Link>
         </li>
       </ul>
