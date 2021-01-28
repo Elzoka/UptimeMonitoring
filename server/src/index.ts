@@ -1,9 +1,10 @@
-import logger from "./util/logger";
-
 import { startServer } from "./app";
+import logger from "./util/logger";
+import config from "./config";
 
 async function bootstrap(): Promise<void> {
-  const PORT = 3000;
+  const PORT = config.PORT || 3000;
+
   try {
     await startServer({
       port: PORT,

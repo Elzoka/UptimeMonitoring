@@ -1,7 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
+import dotenv from "dotenv";
 import { Server } from "http";
+dotenv.config();
 
 const app = express();
 
