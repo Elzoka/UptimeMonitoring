@@ -1,7 +1,27 @@
 function HomePage() {
   return (
     <div className="content">
-      <h1>Home</h1>
+      <h1>Uptime Monitoring</h1>
+      <h2>Made Simple</h2>
+      <div className="blurb">
+        We offer free, simple uptime monitoring for HTTP/HTTPS sites of all
+        kinds, When your site goes down, we ll send you a text to let you know.
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio obcaecati
+        voluptatum aliquid ab odit adipisci nulla consectetur nihil, cumque eius
+        tempora reiciendis hic molestiae possimus facere eum quis corrupti
+        pariatur. Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+        Voluptatum earum et non nulla nisi, perspiciatis, magni, natus minima
+        aut eius incidunt unde error labore nemo laboriosam illo dignissimos
+        provident architecto?
+      </div>
+      <div className="ctaWrapper">
+        <a className="cta green" href="account/create">
+          Get Started
+        </a>
+        <a className="cta blue" href="session/create">
+          Login
+        </a>
+      </div>
     </div>
   );
 }
