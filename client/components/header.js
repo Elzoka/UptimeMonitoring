@@ -16,12 +16,12 @@ export default function Header() {
           </Link>
         </li>
         <li className="loggedOut">
-          <Link href="/account/create">
+          <Link href="/signup">
             <a>Signup</a>
           </Link>
         </li>
         <li className="loggedOut">
-          <Link href="/session/create">
+          <Link href="/login">
             <a>Login</a>
           </Link>
         </li>
