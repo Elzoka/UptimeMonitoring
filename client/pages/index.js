@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 function HomePage() {
   return (
     <div className="content">
@@ -15,12 +17,12 @@ function HomePage() {
         provident architecto?
       </div>
       <div className="ctaWrapper">
-        <a className="cta green" href="account/create">
-          Get Started
-        </a>
-        <a className="cta blue" href="session/create">
-          Login
-        </a>
+        <Link href="/signup">
+          <a className="cta green">Get Started</a>
+        </Link>
+        <Link href="/login">
+          <a className="cta blue">Login</a>
+        </Link>
       </div>
     </div>
   );
