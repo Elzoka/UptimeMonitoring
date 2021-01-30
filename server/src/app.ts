@@ -4,6 +4,8 @@ import morgan from "morgan";
 import createError from "http-errors";
 import dotenv from "dotenv";
 import { Server } from "http";
+
+import routes from "./routes";
 import logger from "./util/logger";
 import handleRequestId from "./middleware/handleRequestId";
 dotenv.config();
@@ -19,6 +21,9 @@ app.use(handleRequestId);
 app.get("/ping", (req, res, next) => {
   res.status(200).send("pong");
 });
+
+// routes
+app.use(routes);
 
 // handle 404 routes
 app.use((req, res) => {
