@@ -10,3 +10,12 @@ export const getAllChecks: RequestHandler = async (req, res) => {
   logger.info(`request ${req.requestId} sending response`);
   res.status(200).json({ checks });
 };
+
+export const createCheck: RequestHandler = async (req, res) => {
+  logger.info(`request ${req.requestId} inside createCheck controller`);
+  const check = await Check.create(req.body);
+  logger.info(`request ${req.requestId} check created successfully`);
+
+  logger.info(`request ${req.requestId} sending response`);
+  res.status(200).json({ check });
+};
