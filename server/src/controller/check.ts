@@ -19,7 +19,7 @@ export const createCheck: RequestHandler = async (req, res) => {
   logger.info(`request ${req.requestId} check created successfully`);
 
   logger.info(`request ${req.requestId} sending response`);
-  res.status(200).json({ check });
+  res.status(201).json({ check });
 };
 
 export const getCheckById: RequestHandler = async (req, res) => {
