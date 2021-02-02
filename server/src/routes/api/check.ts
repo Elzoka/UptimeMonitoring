@@ -13,6 +13,9 @@ check
     handleAsyncError(controller.check.createCheck)
   );
 
-// checks.use("/:id");
+check
+  .route("/:id")
+  .all(validator.utils.validate("checkId"))
+  .get(handleAsyncError(controller.check.getCheckById));
 
 export default check;
