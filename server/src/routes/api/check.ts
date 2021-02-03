@@ -17,6 +17,10 @@ check
   .route("/:id")
   .all(validator.utils.validate("checkId"))
   .get(handleAsyncError(controller.check.getCheckById))
-  .delete(handleAsyncError(controller.check.deleteCheckById));
+  .delete(handleAsyncError(controller.check.deleteCheckById))
+  .put(
+    validator.check.validate("updateCheckById"),
+    handleAsyncError(controller.check.updateCheckById)
+  );
 
 export default check;

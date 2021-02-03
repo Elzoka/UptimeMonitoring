@@ -68,3 +68,31 @@ export const deleteCheckById: RequestHandler = async (req, res, next) => {
     next(e);
   }
 };
+
+export const updateCheckById: RequestHandler = async (req, res) => {
+  logger.info(`request ${req.requestId} inside updateCheckById controller`);
+
+  const check = await Check.findById(req.params.id, { _id: 1 }).lean().exec();
+  console.log(req.body);
+  if (!check) {
+    logger.info(`request ${req.requestId} check doesn't exist`);
+
+    const { status, message } = new createHttpError.NotFound(
+      `check is not found`
+    );
+
+    return res.status(status).send({ message });
+  }
+
+  const updatedCheck = await Check.findOneAndUpdate(
+    { _id: req.params.id },
+    req.body,
+    { new: true }
+  )
+    .lean()
+    .exec();
+
+  logger.info(`request ${req.requestId} check has updated successfully`);
+
+  res.status(200).json({ check: updatedCheck });
+};
