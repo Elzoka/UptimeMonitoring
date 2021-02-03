@@ -5,7 +5,7 @@ import handleValidation from "../middleware/handleValidation";
 import logger from "../util/logger";
 
 interface UtilsValidation {
-  checkId: RequestHandler[];
+  checkId: (clearInvalidatedData: boolean) => RequestHandler[];
 }
 
 const errorMessages = {
@@ -16,21 +16,30 @@ const errorMessages = {
 };
 
 const utilsValidation: UtilsValidation = {
-  checkId: [
-    (req, _res, next) => {
-      logger.info(`request ${req.requestId} started checking params id`);
-      next();
-    },
-    param("id")
-      .exists()
-      .withMessage(errorMessages.id.required)
-      .toLowerCase()
-      .trim()
-      .isMongoId()
-      .withMessage(errorMessages.id.isMongoID),
-    handleValidation,
-  ],
+  checkId: (clearInvalidatedData: boolean) => {
+    const validators: RequestHandler[] = [
+      (req, _res, next) => {
+        logger.info(`request ${req.requestId} started checking params id`);
+        next();
+      },
+      param("id")
+        .exists()
+        .withMessage(errorMessages.id.required)
+        .toLowerCase()
+        .trim()
+        .isMongoId()
+        .withMessage(errorMessages.id.isMongoID),
+    ];
+
+    if (clearInvalidatedData) {
+      validators.push(handleValidation);
+    }
+
+    return validators;
+  },
 };
 
-export const validate = (route: keyof UtilsValidation) =>
-  utilsValidation[route];
+export const validate = (
+  route: keyof UtilsValidation,
+  clearInvalidatedData: boolean = false
+) => utilsValidation[route](clearInvalidatedData);
