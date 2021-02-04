@@ -35,6 +35,7 @@ const routesValidation: RoutesValidation = {
   createCheck: [
     (req, _res, next) => {
       logger.info(`request ${req.requestId} started createCheck validation`);
+      console.log(req.body);
       next();
     },
     body("protocol")

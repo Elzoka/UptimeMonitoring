@@ -1,7 +1,9 @@
 import { useFormik } from "formik";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const CreateCheck = () => {
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       protocol: "http",
@@ -12,7 +14,26 @@ const CreateCheck = () => {
     },
 
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      fetch("/api/check", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: JSON.stringify({
+          ...values,
+          successCodes: values.successCodes.map(Number),
+          timeoutSeconds: values.timeout,
+        }),
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          if (!data.errors) {
+            router.push("/dashboard");
+          }
+        });
     },
   });
 
@@ -58,7 +79,10 @@ const CreateCheck = () => {
             <div className="checkboxGroup">
               {[200, 201, 301, 302, 400, 403, 404, 406, 500].map(
                 (successCode) => (
-                  <>
+                  <div
+                    key={"success_id_" + successCode}
+                    style={{ display: "inline-block" }}
+                  >
                     <input
                       type="checkbox"
                       className="multiselect intval"
@@ -69,7 +93,7 @@ const CreateCheck = () => {
                       //   defaultValue={successCode}
                     />
                     {successCode}
-                  </>
+                  </div>
                 )
               )}
             </div>
