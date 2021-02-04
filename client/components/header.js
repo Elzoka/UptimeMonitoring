@@ -36,7 +36,7 @@ export default function Header() {
           </Link>
         </li>
         <li className="loggedIn">
-          <Link href="#" id="logoutButton ">
+          <Link href="/" id="logoutButton ">
             <a> Logout</a>
           </Link>
         </li>
