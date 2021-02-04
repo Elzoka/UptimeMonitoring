@@ -84,11 +84,11 @@ textarea {
   display: none;
 }
 
-body.loggedIn .header ul li.loggedIn {
+.loggedIn .header ul li.loggedIn {
   display: inline-block;
 }
 
-body.loggedIn .header ul li.loggedOut {
+.loggedIn .header ul li.loggedOut {
   display: none;
 }
 
@@ -140,7 +140,7 @@ h2 {
   padding: 0 0 20px 0;
 }
 
-body.index .blurb {
+.index .blurb {
   text-align: center;
   background-color: #ececec;
   border-color: #b3b3b3;
@@ -324,5 +324,5 @@ td a:active {
 
 #createCheckCTA {
   margin-top: 40px;
-  display: none;
+  display: block;
 }
