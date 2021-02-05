@@ -1,4 +1,6 @@
 import { RequestHandler } from "express";
+import createHttpError from "http-errors";
+import { nextTick } from "process";
 import Check from "../model/Check";
 import logger from "../util/logger";
 
@@ -17,5 +19,80 @@ export const createCheck: RequestHandler = async (req, res) => {
   logger.info(`request ${req.requestId} check created successfully`);
 
   logger.info(`request ${req.requestId} sending response`);
+  res.status(201).json({ check });
+};
+
+export const getCheckById: RequestHandler = async (req, res) => {
+  logger.info(`request ${req.requestId} inside getCheckById controller`);
+
+  const check = await Check.findById(req.params.id).lean().exec();
+
+  if (!check) {
+    logger.info(`request ${req.requestId} check doesn't exist`);
+
+    const { status, message } = new createHttpError.NotFound(
+      `check is not found`
+    );
+
+    return res.status(status).send({ message });
+  }
+
+  logger.info(`request ${req.requestId} returning check by ${req.body.id}`);
+
   res.status(200).json({ check });
+};
+
+export const deleteCheckById: RequestHandler = async (req, res, next) => {
+  logger.info(`request ${req.requestId} inside deleteCheckById controller`);
+
+  const check = await Check.findById(req.params.id, { _id: 1 }).lean().exec();
+
+  if (!check) {
+    logger.info(`request ${req.requestId} check doesn't exist`);
+
+    const { status, message } = new createHttpError.NotFound(
+      `check is not found`
+    );
+
+    return res.status(status).send({ message });
+  }
+
+  try {
+    await Check.deleteOne({ _id: req.params.id });
+    logger.info(`request ${req.requestId} deleted error successfully`);
+    res.status(200).json();
+  } catch (e) {
+    logger.error(
+      `request ${req.requestId} encountered error while deleting the check with error message ${e.message}`
+    );
+    next(e);
+  }
+};
+
+export const updateCheckById: RequestHandler = async (req, res) => {
+  logger.info(`request ${req.requestId} inside updateCheckById controller`);
+
+  const check = await Check.findById(req.params.id, { _id: 1 }).lean().exec();
+  console.log(req.body);
+  if (!check) {
+    logger.info(`request ${req.requestId} check doesn't exist`);
+
+    const { status, message } = new createHttpError.NotFound(
+      `check is not found`
+    );
+
+    return res.status(status).send({ message });
+  }
+
+  const updatedCheck = await Check.findOneAndUpdate(
+    { _id: req.params.id },
+    req.body,
+    { new: true }
+  )
+    .lean()
+    .exec();
+
+  logger.info(`request ${req.requestId} check has updated successfully`);
+
+  res.status(200).json({ check: updatedCheck });
 };

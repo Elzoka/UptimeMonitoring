@@ -5,6 +5,7 @@ import logger from "../util/logger";
 
 interface RoutesValidation {
   createCheck: RequestHandler[];
+  updateCheckById: RequestHandler[];
 }
 
 const errorMessages = {
@@ -73,6 +74,50 @@ const routesValidation: RoutesValidation = {
       .withMessage(errorMessages.method.required)
       .isArray({ min: 1 })
       .custom((value) => {
+        if (value.every(Number.isInteger)) {
+          return true;
+        }
+        throw new Error("Array does not contain Integers");
+      }),
+    handleValidation,
+  ],
+  updateCheckById: [
+    (req, _res, next) => {
+      console.log(req.body);
+      logger.info(`request ${req.requestId} started createCheck validation`);
+      next();
+    },
+    body("protocol")
+      .optional()
+      .isString()
+      .trim()
+      .toLowerCase()
+      .isIn(["http", "https"])
+      .withMessage(errorMessages.protocol.enum),
+    body("url")
+      .optional()
+      .isString()
+      .trim()
+      .toLowerCase()
+      .isURL()
+      .withMessage(errorMessages.url.isUrl),
+    body("timeoutSeconds")
+      .optional()
+      .isInt()
+      .toInt()
+      .withMessage(errorMessages.timeoutSeconds.isInt),
+    body("method")
+      .optional()
+      .isString()
+      .trim()
+      .toUpperCase()
+      .isIn(["POST", "GET", "UPDATE", "DELETE"])
+      .withMessage(errorMessages.method.enum),
+    body("successCodes", errorMessages.successCodes.isArray)
+      .optional()
+      .isArray({ min: 1 })
+      .custom((value) => {
+        console.log(value);
         if (value.every(Number.isInteger)) {
           return true;
         }
